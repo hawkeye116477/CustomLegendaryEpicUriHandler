@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("hawkeye116477")]
 [assembly: AssemblyProduct("CustomLegendaryEpicUriHandler")]
 [assembly: AssemblyCopyright("Copyright © hawkeye116477 2025")]
-[assembly: AssemblyTrademark("2025")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

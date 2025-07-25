@@ -12,13 +12,10 @@ namespace CustomLegendaryEpicUriHandler
 
         public static void DisplayHelp()
         {
-            Console.WriteLine("\nCustomLegendaryEpicUriHandler Usage:");
-            Console.WriteLine("  To get handler version:");
-            Console.WriteLine($"    {ExeName} --version  (or -v)");
-            Console.WriteLine("  To get this help message:");
-            Console.WriteLine($"    {ExeName}  --help     (or -h)");
-            Console.WriteLine("\nPress any key to exit.");
-            Console.ReadKey();
+            Console.WriteLine($"\nUsage: {ExeName} [options]");
+            Console.WriteLine("\nOptions:");
+            Console.WriteLine($"-v, --version\tDisplay version information");
+            Console.WriteLine($"-h, --help\tDisplay this help message");
         }
         public static void Main(string[] args)
         {
@@ -27,9 +24,7 @@ namespace CustomLegendaryEpicUriHandler
                 string firstArg = args[0].ToLowerInvariant();
                 if (firstArg == "--version" || firstArg == "-v")
                 {
-                    Console.WriteLine($"\nCustomLegendaryEpicUriHandler Version: {Assembly.GetExecutingAssembly().GetName().Version}");
-                    Console.WriteLine("Press any key to exit.");
-                    Console.ReadKey();
+                    Console.WriteLine($"\nCustomLegendaryEpicUriHandler {Assembly.GetExecutingAssembly().GetName().Version}");
                     return;
                 }
                 if (firstArg == "--help" || firstArg == "-h")
