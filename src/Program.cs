@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -159,6 +160,13 @@ namespace CustomLegendaryEpicUriHandler
                         Console.Error.WriteLine($"Error launching Legendary: {ex.Message}");
                         DisplayGoodBye();
                     }
+                }
+                else if (uri.Host == "store")
+                {
+                    string urlPart = absolutePath.Trim('/');
+                    var epicUrl = $"https://store.epicgames.com/{urlPart}";
+                    Console.WriteLine($"Final URL: {epicUrl}");
+                    Process.Start(epicUrl);
                 }
             }
             catch (UriFormatException ex)
