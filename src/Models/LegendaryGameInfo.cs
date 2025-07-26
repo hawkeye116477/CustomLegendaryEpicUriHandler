@@ -7,7 +7,7 @@ namespace CustomLegendaryEpicUriHandler.Models
             public Game Game { get; set; }
             public bool errorDisplayed { get; set; } = false;
         }
-        
+
         public class Game
         {
             public string App_name { get; set; }
@@ -16,6 +16,5 @@ namespace CustomLegendaryEpicUriHandler.Models
             public bool Is_dlc { get; set; } = false;
             public string External_activation { get; set; } = "";
         }
-        
     }
 }

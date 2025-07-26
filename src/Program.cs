@@ -20,8 +20,8 @@ namespace CustomLegendaryEpicUriHandler
         {
             Console.WriteLine($"\nUsage: {ExeName} [options]");
             Console.WriteLine("\nOptions:");
-            Console.WriteLine($"-v, --version\tDisplay version information");
-            Console.WriteLine($"-h, --help\tDisplay this help message");
+            Console.WriteLine("-v, --version\tDisplay version information");
+            Console.WriteLine("-h, --help\tDisplay this help message");
         }
 
         public static void DisplayGoodBye()
@@ -34,7 +34,7 @@ namespace CustomLegendaryEpicUriHandler
         {
             if (args.Length > 0)
             {
-                string firstArg = args[0].ToLowerInvariant();
+                var firstArg = args[0].ToLowerInvariant();
                 if (firstArg == "--version" || firstArg == "-v")
                 {
                     Console.WriteLine(
@@ -55,12 +55,12 @@ namespace CustomLegendaryEpicUriHandler
                 return;
             }
 
-            string urlString = args[0];
+            var urlString = args[0];
             Console.WriteLine($"Received URL: {urlString}");
             try
             {
-                Uri uri = new Uri(urlString);
-                string expectedScheme = "com.epicgames.launcher";
+                var uri = new Uri(urlString);
+                var expectedScheme = "com.epicgames.launcher";
                 if (uri.Scheme != expectedScheme)
                 {
                     Console.WriteLine($"Error: Unexpected scheme '{uri.Scheme}'. Expected '${expectedScheme}'.");
@@ -69,22 +69,22 @@ namespace CustomLegendaryEpicUriHandler
                 }
 
                 // --- Extract app name from path ---
-                string absolutePath = uri.AbsolutePath;
+                var absolutePath = uri.AbsolutePath;
 
 
-                if (uri.Host == "apps" && (!string.IsNullOrEmpty(absolutePath)))
+                if (uri.Host == "apps" && !string.IsNullOrEmpty(absolutePath))
                 {
-                    string appName = absolutePath.Trim('/');
+                    var appName = absolutePath.Trim('/');
                     Console.WriteLine($"App name: {appName}");
 
                     // --- Parse query parameters ---
-                    System.Collections.Specialized.NameValueCollection queryParameters =
+                    var queryParameters =
                         HttpUtility.ParseQueryString(uri.Query);
 
-                    string action = queryParameters["action"];
+                    var action = queryParameters["action"];
 
                     Console.WriteLine($"Action: {action ?? "N/A"}");
-                    string legendaryLauncherPath = Path.Combine(LegendarySettings.LauncherPath, "legendary.exe");
+                    var legendaryLauncherPath = Path.Combine(LegendarySettings.LauncherPath, "legendary.exe");
 
                     if (!File.Exists(legendaryLauncherPath))
                     {
@@ -102,7 +102,7 @@ namespace CustomLegendaryEpicUriHandler
                         if (action != null && action.Equals("launch", StringComparison.OrdinalIgnoreCase))
                         {
                             launcherArguments.AddRange(new[] { "launch", $"{appName}" });
-                            LegendaryGameInfo.Game game = new LegendaryGameInfo.Game
+                            var game = new LegendaryGameInfo.Game
                             {
                                 App_name = appName
                             };
@@ -163,7 +163,7 @@ namespace CustomLegendaryEpicUriHandler
                 }
                 else if (uri.Host == "store")
                 {
-                    string urlPart = absolutePath.Trim('/');
+                    var urlPart = absolutePath.Trim('/');
                     var epicUrl = $"https://store.epicgames.com/{urlPart}";
                     Console.WriteLine($"Final URL: {epicUrl}");
                     Process.Start(epicUrl);

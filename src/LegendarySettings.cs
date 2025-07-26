@@ -17,11 +17,6 @@ namespace CustomLegendaryEpicUriHandler
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Playnite", "ExtensionsData",
             "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
 
-        internal static string GetExecutablePath(string rootPath)
-        {
-            return Path.Combine(rootPath, "legendary.exe");
-        }
-
         public static string ClientExecPath
         {
             get
@@ -90,10 +85,10 @@ namespace CustomLegendaryEpicUriHandler
             get
             {
                 var pluginSettingsPath = Path.Combine(PluginPath, "config.json");
-                LegendaryPluginSettings legendaryPluginSettings = new LegendaryPluginSettings();
-                using (StreamReader file = File.OpenText(pluginSettingsPath))
+                var legendaryPluginSettings = new LegendaryPluginSettings();
+                using (var file = File.OpenText(pluginSettingsPath))
                 {
-                    JsonSerializer serializer = new JsonSerializer();
+                    var serializer = new JsonSerializer();
                     legendaryPluginSettings =
                         (LegendaryPluginSettings)serializer.Deserialize(file, typeof(LegendaryPluginSettings));
                 }
@@ -169,6 +164,11 @@ namespace CustomLegendaryEpicUriHandler
             }
         }
 
+        internal static string GetExecutablePath(string rootPath)
+        {
+            return Path.Combine(rootPath, "legendary.exe");
+        }
+
         public static async Task<LegendaryGameInfo.Rootobject> GetGameInfo(LegendaryGameInfo.Game installData)
         {
             var gameID = installData.App_name;
@@ -180,16 +180,16 @@ namespace CustomLegendaryEpicUriHandler
                 Directory.CreateDirectory(cacheInfoPath);
             }
 
-            bool correctJson = false;
+            var correctJson = false;
             if (File.Exists(cacheInfoFile))
             {
                 var content = File.ReadAllText(cacheInfoFile);
 
-                if (!String.IsNullOrWhiteSpace(content))
+                if (!string.IsNullOrWhiteSpace(content))
                 {
                     try
                     {
-                        JsonSerializer serializer = new JsonSerializer();
+                        var serializer = new JsonSerializer();
                         manifest = JsonConvert.DeserializeObject<LegendaryGameInfo.Rootobject>(content);
                         if (manifest != null && manifest.Game != null)
                         {
