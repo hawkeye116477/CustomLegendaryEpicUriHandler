@@ -9,6 +9,7 @@ using System.Web;
 using CliWrap;
 using CliWrap.EventStream;
 using CustomLegendaryEpicUriHandler.Models;
+using Microsoft.Win32;
 
 namespace CustomLegendaryEpicUriHandler
 {
@@ -41,10 +42,29 @@ namespace CustomLegendaryEpicUriHandler
                         $"\nCustomLegendaryEpicUriHandler {Assembly.GetExecutingAssembly().GetName().Version}");
                     return;
                 }
-
+                
                 if (firstArg == "--help" || firstArg == "-h")
                 {
                     DisplayHelp();
+                    return;
+                }
+                
+                if (firstArg == "--register")
+                {
+                    Console.WriteLine("Registering 'com.epicgames.launcher' Uri Handler...");
+                    using (var epicKey = Registry.CurrentUser.CreateSubKey(@"Software\Classes\com.epicgames.launcher"))
+                    {
+                        epicKey.SetValue("", "URL:com.epicgames.launcher Protocol");
+                        epicKey.SetValue("URL Protocol", "");
+                        using (var shellKey = epicKey.CreateSubKey("shell"))
+                        using (var openKey = shellKey.CreateSubKey("open"))
+                        using (var commandKey = openKey.CreateSubKey("command"))
+                        {
+                            var handlerExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                            commandKey.SetValue("", $"\"{handlerExePath}\" \"%1\"");
+                            Console.WriteLine($"Successfully registered 'com.epicgames.launcher' protocol handler.");
+                        }
+                    }
                     return;
                 }
             }
