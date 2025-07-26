@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using CustomLegendaryEpicUriHandler.Models;
 using Newtonsoft.Json;
 
@@ -62,6 +63,10 @@ namespace CustomLegendaryEpicUriHandler
                         pf64 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                     }
                     launcherPath = Path.Combine(pf64, "Legendary");
+                    if (!File.Exists(Path.Combine(launcherPath, "legendary.exe")))
+                    {
+                        launcherPath = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty)?.FullName;
+                    }
                 }
                 
                 var savedSettings = PlaynitePluginSettings;
