@@ -21,6 +21,7 @@ namespace CustomLegendaryEpicUriHandler
         {
             Console.WriteLine($"\nUsage: {ExeName} [options]");
             Console.WriteLine("\nOptions:");
+            Console.WriteLine("-r, --register\tActivate handler by adding entry to registry");
             Console.WriteLine("-v, --version\tDisplay version information");
             Console.WriteLine("-h, --help\tDisplay this help message");
         }
@@ -49,7 +50,7 @@ namespace CustomLegendaryEpicUriHandler
                     return;
                 }
 
-                if (firstArg == "--register")
+                if (firstArg == "--register" || firstArg == "-r")
                 {
                     Console.WriteLine("Registering 'com.epicgames.launcher' Uri Handler...");
                     using (var epicKey = Registry.CurrentUser.CreateSubKey(@"Software\Classes\com.epicgames.launcher"))
