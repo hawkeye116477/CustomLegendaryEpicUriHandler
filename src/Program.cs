@@ -39,16 +39,16 @@ namespace CustomLegendaryEpicUriHandler
                 if (firstArg == "--version" || firstArg == "-v")
                 {
                     Console.WriteLine(
-                        $"\nCustomLegendaryEpicUriHandler {Assembly.GetExecutingAssembly().GetName().Version}");
+                        $"CustomLegendaryEpicUriHandler {Assembly.GetExecutingAssembly().GetName().Version}");
                     return;
                 }
-                
+
                 if (firstArg == "--help" || firstArg == "-h")
                 {
                     DisplayHelp();
                     return;
                 }
-                
+
                 if (firstArg == "--register")
                 {
                     Console.WriteLine("Registering 'com.epicgames.launcher' Uri Handler...");
@@ -60,11 +60,12 @@ namespace CustomLegendaryEpicUriHandler
                         using (var openKey = shellKey.CreateSubKey("open"))
                         using (var commandKey = openKey.CreateSubKey("command"))
                         {
-                            var handlerExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                            var handlerExePath = Assembly.GetExecutingAssembly().Location;
                             commandKey.SetValue("", $"\"{handlerExePath}\" \"%1\"");
-                            Console.WriteLine($"Successfully registered 'com.epicgames.launcher' protocol handler.");
+                            Console.WriteLine("Successfully registered 'com.epicgames.launcher' protocol handler.");
                         }
                     }
+
                     return;
                 }
             }
@@ -92,101 +93,110 @@ namespace CustomLegendaryEpicUriHandler
                 var absolutePath = uri.AbsolutePath;
 
 
-                if (uri.Host == "apps" && !string.IsNullOrEmpty(absolutePath))
+                if (!string.IsNullOrEmpty(absolutePath))
                 {
-                    var appName = absolutePath.Trim('/');
-                    Console.WriteLine($"App name: {appName}");
-
-                    // --- Parse query parameters ---
-                    var queryParameters =
-                        HttpUtility.ParseQueryString(uri.Query);
-
-                    var action = queryParameters["action"];
-
-                    Console.WriteLine($"Action: {action ?? "N/A"}");
-                    var legendaryLauncherPath = Path.Combine(LegendarySettings.LauncherPath, "legendary.exe");
-
-                    if (!File.Exists(legendaryLauncherPath))
+                    switch (uri.Host)
                     {
-                        Console.WriteLine(
-                            $"Error: Legendary launcher not found at '{legendaryLauncherPath}'. Please install or add it to PATH environment variable.");
-                        DisplayGoodBye();
-                        return;
-                    }
-
-                    var launcherArguments = new List<string>();
-
-                    // Customize the arguments based on the parsed URL components
-                    if (!string.IsNullOrEmpty(appName))
-                    {
-                        if (action != null && action.Equals("launch", StringComparison.OrdinalIgnoreCase))
+                        case "apps":
                         {
-                            launcherArguments.AddRange(new[] { "launch", $"{appName}" });
-                            var game = new LegendaryGameInfo.Game
+                            var appName = absolutePath.Trim('/');
+                            Console.WriteLine($"App name: {appName}");
+
+                            // --- Parse query parameters ---
+                            var queryParameters =
+                                HttpUtility.ParseQueryString(uri.Query);
+
+                            var action = queryParameters["action"];
+
+                            Console.WriteLine($"Action: {action ?? "N/A"}");
+                            var legendaryLauncherPath = Path.Combine(LegendarySettings.LauncherPath, "legendary.exe");
+
+                            if (!File.Exists(legendaryLauncherPath))
                             {
-                                App_name = appName
-                            };
-                            var manifest = await LegendarySettings.GetGameInfo(game);
-                            if (manifest != null && manifest.Game != null)
+                                Console.WriteLine(
+                                    $"Error: Legendary launcher not found at '{legendaryLauncherPath}'. Please install or add it to PATH environment variable.");
+                                DisplayGoodBye();
+                                return;
+                            }
+
+                            var launcherArguments = new List<string>();
+
+                            // Customize the arguments based on the parsed URL components
+                            if (!string.IsNullOrEmpty(appName))
                             {
-                                if (!string.IsNullOrEmpty(manifest.Game.External_activation) &&
-                                    (manifest.Game.External_activation.ToLower() == "origin" ||
-                                     manifest.Game.External_activation.ToLower() == "the ea app"))
+                                if (action != null && action.Equals("launch", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    launcherArguments.Add("--origin");
+                                    launcherArguments.AddRange(new[] { "launch", $"{appName}" });
+                                    var game = new LegendaryGameInfo.Game
+                                    {
+                                        App_name = appName
+                                    };
+                                    var manifest = await LegendarySettings.GetGameInfo(game);
+                                    if (manifest?.Game != null)
+                                    {
+                                        if (!string.IsNullOrEmpty(manifest.Game.External_activation) &&
+                                            (manifest.Game.External_activation.ToLower() == "origin" ||
+                                             manifest.Game.External_activation.ToLower() == "the ea app"))
+                                        {
+                                            launcherArguments.Add("--origin");
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No specific app name found in the URL to launch.");
-                        DisplayGoodBye();
-                    }
-
-                    try
-                    {
-                        var stdOutBuffer = new StringBuilder();
-                        var cmd = Cli.Wrap(legendaryLauncherPath)
-                            .WithArguments(launcherArguments)
-                            .WithEnvironmentVariables(LegendarySettings.DefaultEnvironmentVariables)
-                            .AddCommandToLog()
-                            .WithValidation(CommandResultValidation.None);
-                        await foreach (var cmdEvent in cmd.ListenAsync())
-                        {
-                            switch (cmdEvent)
+                            else
                             {
-                                case StartedCommandEvent started:
-                                    Console.WriteLine("Legendary launcher started successfully.");
-                                    break;
-                                case StandardErrorCommandEvent stdErr:
-                                    stdOutBuffer.AppendLine(stdErr.Text);
-                                    break;
-                                case ExitedCommandEvent exited:
-                                    if (exited.ExitCode != 0)
-                                    {
-                                        var errorMessage = stdOutBuffer.ToString();
-                                        Console.WriteLine("[Legendary] " + errorMessage);
-                                        Console.Error.WriteLine("[Legendary] exit code: " + exited.ExitCode);
-                                        DisplayGoodBye();
-                                    }
-
-                                    break;
+                                Console.WriteLine("No specific app name found in the URL to launch.");
+                                DisplayGoodBye();
                             }
+
+                            try
+                            {
+                                var stdOutBuffer = new StringBuilder();
+                                var cmd = Cli.Wrap(legendaryLauncherPath)
+                                    .WithArguments(launcherArguments)
+                                    .WithEnvironmentVariables(LegendarySettings.DefaultEnvironmentVariables)
+                                    .AddCommandToLog()
+                                    .WithValidation(CommandResultValidation.None);
+                                await foreach (var cmdEvent in cmd.ListenAsync())
+                                {
+                                    switch (cmdEvent)
+                                    {
+                                        case StartedCommandEvent started:
+                                            Console.WriteLine("Legendary launcher started successfully.");
+                                            break;
+                                        case StandardErrorCommandEvent stdErr:
+                                            stdOutBuffer.AppendLine(stdErr.Text);
+                                            break;
+                                        case ExitedCommandEvent exited:
+                                            if (exited.ExitCode != 0)
+                                            {
+                                                var errorMessage = stdOutBuffer.ToString();
+                                                Console.WriteLine("[Legendary] " + errorMessage);
+                                                Console.Error.WriteLine("[Legendary] exit code: " + exited.ExitCode);
+                                                DisplayGoodBye();
+                                            }
+
+                                            break;
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"Error launching Legendary: {ex.Message}");
+                                DisplayGoodBye();
+                            }
+
+                            break;
+                        }
+                        case "store":
+                        {
+                            var urlPart = absolutePath.Trim('/');
+                            var epicUrl = $"https://store.epicgames.com/{urlPart}";
+                            Console.WriteLine($"Final URL: {epicUrl}");
+                            Process.Start(epicUrl);
+                            break;
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Console.Error.WriteLine($"Error launching Legendary: {ex.Message}");
-                        DisplayGoodBye();
-                    }
-                }
-                else if (uri.Host == "store")
-                {
-                    var urlPart = absolutePath.Trim('/');
-                    var epicUrl = $"https://store.epicgames.com/{urlPart}";
-                    Console.WriteLine($"Final URL: {epicUrl}");
-                    Process.Start(epicUrl);
                 }
             }
             catch (UriFormatException ex)
