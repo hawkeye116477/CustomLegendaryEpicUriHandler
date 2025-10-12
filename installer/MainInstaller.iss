@@ -4,7 +4,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Custom Legendary Epic Uri Handler"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "hawkeye116477"
 #define MyAppURL "https://github.com/hawkeye116477/CustomLegendaryEpicUriHandler"
 #define MyAppExeName "CustomLegendaryEpicUriHandler.exe"
@@ -93,6 +93,6 @@ Root: HKA; Subkey: "Software\Classes\com.epicgames.launcher\shell\open\command";
 [Code]
 function InitializeSetup: Boolean;
 begin
-  Dependency_AddDotNet46;
+  Dependency_AddDotNet80;
   Result := True;
 end;
