@@ -206,27 +206,12 @@ namespace CustomLegendaryEpicUriHandler
             if (!correctJson)
             {
                 BufferedCommandResult result;
-                if (gameID == "eos-overlay")
-                {
-                    result = await Cli.Wrap(ClientExecPath)
-                        .WithArguments(new[] { "eos-overlay", "install" })
-                        .WithEnvironmentVariables(DefaultEnvironmentVariables)
-                        .WithStandardInputPipe(PipeSource.FromString("n"))
-                        .AddCommandToLog()
-                        .WithValidation(CommandResultValidation.None)
-                        .ExecuteBufferedAsync();
-                }
-                else
-                {
-                    result = await Cli.Wrap(ClientExecPath)
-                        .WithArguments(new[] { "info", gameID, "--json" })
-                        .WithEnvironmentVariables(DefaultEnvironmentVariables)
-                        .AddCommandToLog()
-                        .WithValidation(CommandResultValidation.None)
-                        .ExecuteBufferedAsync();
-                }
-
-                var errorMessage = result.StandardError;
+                result = await Cli.Wrap(ClientExecPath)
+                                  .WithArguments(new[] { "info", gameID, "--json" })
+                                  .WithEnvironmentVariables(DefaultEnvironmentVariables)
+                                  .AddCommandToLog()
+                                  .WithValidation(CommandResultValidation.None)
+                                  .ExecuteBufferedAsync();
                 if (result.ExitCode != 0)
                 {
                     Console.Error.WriteLine("[Legendary]" + result.StandardError);
