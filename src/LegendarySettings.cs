@@ -86,13 +86,15 @@ namespace CustomLegendaryEpicUriHandler
             {
                 var pluginSettingsPath = Path.Combine(PluginPath, "config.json");
                 var legendaryPluginSettings = new LegendaryPluginSettings();
-                using (var file = File.OpenText(pluginSettingsPath))
+                if (File.Exists(pluginSettingsPath))
                 {
-                    var serializer = new JsonSerializer();
-                    legendaryPluginSettings =
-                        (LegendaryPluginSettings)serializer.Deserialize(file, typeof(LegendaryPluginSettings));
+                    using (var file = File.OpenText(pluginSettingsPath))
+                    {
+                        var serializer = new JsonSerializer();
+                        legendaryPluginSettings =
+                            (LegendaryPluginSettings)serializer.Deserialize(file, typeof(LegendaryPluginSettings));
+                    }
                 }
-
                 return legendaryPluginSettings;
             }
         }
