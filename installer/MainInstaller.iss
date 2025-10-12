@@ -96,3 +96,6 @@ begin
   Dependency_AddDotNet80;
   Result := True;
 end;
+
+[InstallDelete]
+Type: files; Name: "{app}\*.*"
