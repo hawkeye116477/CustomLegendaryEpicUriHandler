@@ -15,7 +15,7 @@ namespace CustomLegendaryEpicUriHandler
 {
     internal class Program
     {
-        public static string ExeName => Path.GetFileName(Assembly.GetEntryAssembly()?.Location);
+        public static string ExeName => Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName) ?? string.Empty;
 
         public static void DisplayHelp()
         {
