@@ -15,7 +15,8 @@ namespace CustomLegendaryEpicUriHandler
 {
     internal class Program
     {
-        public static string ExeName => Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName) ?? string.Empty;
+        public static string ExeName =>
+            Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName) ?? string.Empty;
 
         public static void DisplayHelp()
         {
@@ -37,37 +38,36 @@ namespace CustomLegendaryEpicUriHandler
             if (args.Length > 0)
             {
                 var firstArg = args[0].ToLowerInvariant();
-                if (firstArg == "--version" || firstArg == "-v")
+                switch (firstArg)
                 {
-                    Console.WriteLine(
-                        $"CustomLegendaryEpicUriHandler {Assembly.GetExecutingAssembly().GetName().Version}");
-                    return;
-                }
-
-                if (firstArg == "--help" || firstArg == "-h")
-                {
-                    DisplayHelp();
-                    return;
-                }
-
-                if (firstArg == "--register" || firstArg == "-r")
-                {
-                    Console.WriteLine("Registering 'com.epicgames.launcher' Uri Handler...");
-                    using (var epicKey = Registry.CurrentUser.CreateSubKey(@"Software\Classes\com.epicgames.launcher"))
+                    case "--version":
+                    case "-v":
+                        Console.WriteLine(
+                                          $"CustomLegendaryEpicUriHandler {Assembly.GetExecutingAssembly().GetName().Version}");
+                        return;
+                    case "--help" or "-h":
+                        DisplayHelp();
+                        return;
+                    case "--register" or "-r":
                     {
-                        epicKey.SetValue("", "URL:com.epicgames.launcher Protocol");
-                        epicKey.SetValue("URL Protocol", "");
-                        using (var shellKey = epicKey.CreateSubKey("shell"))
-                        using (var openKey = shellKey.CreateSubKey("open"))
-                        using (var commandKey = openKey.CreateSubKey("command"))
+                        Console.WriteLine("Registering 'com.epicgames.launcher' Uri Handler...");
+                        using (var epicKey =
+                               Registry.CurrentUser.CreateSubKey(@"Software\Classes\com.epicgames.launcher"))
                         {
-                            var handlerExePath = Assembly.GetExecutingAssembly().Location;
-                            commandKey.SetValue("", $"\"{handlerExePath}\" \"%1\"");
-                            Console.WriteLine("Successfully registered 'com.epicgames.launcher' protocol handler.");
+                            epicKey.SetValue("", "URL:com.epicgames.launcher Protocol");
+                            epicKey.SetValue("URL Protocol", "");
+                            using (var shellKey = epicKey.CreateSubKey("shell"))
+                            using (var openKey = shellKey.CreateSubKey("open"))
+                            using (var commandKey = openKey.CreateSubKey("command"))
+                            {
+                                var handlerExePath = Assembly.GetExecutingAssembly().Location;
+                                commandKey.SetValue("", $"\"{handlerExePath}\" \"%1\"");
+                                Console.WriteLine("Successfully registered 'com.epicgames.launcher' protocol handler.");
+                            }
                         }
-                    }
 
-                    return;
+                        return;
+                    }
                 }
             }
 
@@ -115,7 +115,7 @@ namespace CustomLegendaryEpicUriHandler
                             if (!File.Exists(legendaryLauncherPath))
                             {
                                 Console.WriteLine(
-                                    $"Error: Legendary launcher not found at '{legendaryLauncherPath}'. Please install or add it to PATH environment variable.");
+                                                  $"Error: Legendary launcher not found at '{legendaryLauncherPath}'. Please install or add it to PATH environment variable.");
                                 DisplayGoodBye();
                                 return;
                             }
@@ -129,9 +129,9 @@ namespace CustomLegendaryEpicUriHandler
                                 {
                                     launcherArguments.AddRange(new[] { "launch", $"{appName}" });
                                     var game = new LegendaryGameInfo.Game
-                                    {
-                                        App_name = appName
-                                    };
+                                               {
+                                                   App_name = appName
+                                               };
                                     var manifest = await LegendarySettings.GetGameInfo(game);
                                     if (manifest?.Game != null)
                                     {
@@ -154,10 +154,10 @@ namespace CustomLegendaryEpicUriHandler
                             {
                                 var stdOutBuffer = new StringBuilder();
                                 var cmd = Cli.Wrap(legendaryLauncherPath)
-                                    .WithArguments(launcherArguments)
-                                    .WithEnvironmentVariables(LegendarySettings.DefaultEnvironmentVariables)
-                                    .AddCommandToLog()
-                                    .WithValidation(CommandResultValidation.None);
+                                             .WithArguments(launcherArguments)
+                                             .WithEnvironmentVariables(LegendarySettings.DefaultEnvironmentVariables!)
+                                             .AddCommandToLog()
+                                             .WithValidation(CommandResultValidation.None);
                                 await foreach (var cmdEvent in cmd.ListenAsync())
                                 {
                                     switch (cmdEvent)

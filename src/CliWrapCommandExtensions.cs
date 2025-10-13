@@ -16,8 +16,7 @@ namespace CustomLegendaryEpicUriHandler
                 }
             }
 
-            Console.WriteLine(
-                $"Executing command: {allEnvironmentVariables}{command.TargetFilePath} {command.Arguments}");
+            Console.WriteLine($"Executing command: {allEnvironmentVariables}{command.TargetFilePath} {command.Arguments}");
             return command;
         }
     }

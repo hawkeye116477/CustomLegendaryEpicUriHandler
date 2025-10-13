@@ -13,9 +13,10 @@ namespace CustomLegendaryEpicUriHandler
 {
     public class LegendarySettings
     {
-        public static string PluginPath { get; set; } = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Playnite", "ExtensionsData",
-            "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
+        public static string PluginPath { get; set; } =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                         "Playnite", "ExtensionsData",
+                         "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
 
         public static string ClientExecPath
         {
@@ -31,10 +32,10 @@ namespace CustomLegendaryEpicUriHandler
             get
             {
                 var legendaryConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    ".config", "legendary");
+                                                       ".config", "legendary");
                 var heroicLegendaryConfigPath =
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "heroic",
-                        "legendaryConfig", "legendary");
+                                 "legendaryConfig", "legendary");
                 var originalLegendaryInstallListPath = Path.Combine(legendaryConfigPath, "installed.json");
                 var heroicLegendaryInstallListPath = Path.Combine(heroicLegendaryConfigPath, "installed.json");
                 if (File.Exists(heroicLegendaryInstallListPath))
@@ -70,7 +71,7 @@ namespace CustomLegendaryEpicUriHandler
                 var envDict = new Dictionary<string, string>();
                 var heroicLegendaryConfigPath =
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "heroic",
-                        "legendaryConfig", "legendary");
+                                 "legendaryConfig", "legendary");
                 if (ConfigPath == heroicLegendaryConfigPath)
                 {
                     envDict.Add("LEGENDARY_CONFIG_PATH", ConfigPath);
@@ -95,6 +96,7 @@ namespace CustomLegendaryEpicUriHandler
                             (LegendaryPluginSettings)serializer.Deserialize(file, typeof(LegendaryPluginSettings));
                     }
                 }
+
                 return legendaryPluginSettings;
             }
         }
@@ -103,9 +105,9 @@ namespace CustomLegendaryEpicUriHandler
         {
             get
             {
-                var heroicResourcesBasePath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    @"Programs\heroic\resources\app.asar.unpacked\build\bin");
+                var heroicResourcesBasePath =
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                 @"Programs\heroic\resources\app.asar.unpacked\build\bin");
                 var path = Path.Combine(heroicResourcesBasePath, @"win32\");
                 if (!Directory.Exists(path))
                 {
@@ -122,9 +124,9 @@ namespace CustomLegendaryEpicUriHandler
             {
                 var launcherPath = "";
                 var envPath = Environment.GetEnvironmentVariable("PATH")
-                    ?.Split(';')
-                    .Select(x => Path.Combine(x))
-                    .FirstOrDefault(x => File.Exists(Path.Combine(x, "legendary.exe")));
+                                         ?.Split(';')
+                                         .Select(x => Path.Combine(x))
+                                         .FirstOrDefault(x => File.Exists(Path.Combine(x, "legendary.exe")));
                 if (string.IsNullOrWhiteSpace(envPath) == false)
                 {
                     launcherPath = envPath;
@@ -145,8 +147,9 @@ namespace CustomLegendaryEpicUriHandler
                     if (!File.Exists(Path.Combine(launcherPath, "legendary.exe")))
                     {
                         launcherPath = Directory
-                            .GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty)
-                            ?.FullName;
+                                       .GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
+                                                  string.Empty)
+                                       ?.FullName;
                     }
                 }
 
