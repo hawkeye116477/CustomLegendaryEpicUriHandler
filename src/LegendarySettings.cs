@@ -23,7 +23,7 @@ namespace CustomLegendaryEpicUriHandler
             get
             {
                 var path = LauncherPath;
-                return string.IsNullOrEmpty(path) ? string.Empty : GetExecutablePath(path);
+                return string.IsNullOrEmpty(path) ? string.Empty : path;
             }
         }
 
@@ -85,11 +85,16 @@ namespace CustomLegendaryEpicUriHandler
         {
             get
             {
-                var pluginSettingsPath = Path.Combine(PluginPath, "config.json");
-                var legendaryPluginSettings = new LegendaryPluginSettings();
-                if (File.Exists(pluginSettingsPath))
+                var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                              "CustomLegendaryEpicUriHandler");
+                if (!File.Exists(settingsPath))
                 {
-                    using (var file = File.OpenText(pluginSettingsPath))
+                    settingsPath  = Path.Combine(PluginPath, "config.json");
+                }
+                var legendaryPluginSettings = new LegendaryPluginSettings();
+                if (File.Exists(settingsPath))
+                {
+                    using (var file = File.OpenText(settingsPath))
                     {
                         var serializer = new JsonSerializer();
                         legendaryPluginSettings =
@@ -124,9 +129,9 @@ namespace CustomLegendaryEpicUriHandler
             {
                 var launcherPath = "";
                 var envPath = Environment.GetEnvironmentVariable("PATH")
-                                         ?.Split(';')
-                                         .Select(x => Path.Combine(x))
-                                         .FirstOrDefault(x => File.Exists(Path.Combine(x, "legendary.exe")));
+                                         .Split(new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries)
+                                         .Select(dir => Path.Combine(dir, "legendary.exe"))
+                                         .FirstOrDefault(File.Exists);
                 if (string.IsNullOrWhiteSpace(envPath) == false)
                 {
                     launcherPath = envPath;
@@ -142,7 +147,7 @@ namespace CustomLegendaryEpicUriHandler
                     {
                         pf64 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                     }
-
+                    
                     launcherPath = Path.Combine(pf64, "Legendary");
                     if (!File.Exists(Path.Combine(launcherPath, "legendary.exe")))
                     {
@@ -154,24 +159,19 @@ namespace CustomLegendaryEpicUriHandler
                 }
 
                 var savedSettings = PlaynitePluginSettings;
-                if (savedSettings != null && savedSettings.SelectedLauncherPath != "" &&
-                    File.Exists(savedSettings.SelectedLauncherPath))
+                if (savedSettings != null && savedSettings.SelectedFullLauncherPath != "" &&
+                    File.Exists(savedSettings.SelectedFullLauncherPath))
                 {
-                    launcherPath = savedSettings.SelectedLauncherPath;
+                    launcherPath = savedSettings.SelectedFullLauncherPath;
                 }
 
-                if (launcherPath != null && !File.Exists(Path.Combine(launcherPath, "legendary.exe")))
+                if (launcherPath != null && !File.Exists(launcherPath))
                 {
                     launcherPath = "";
                 }
 
                 return launcherPath;
             }
-        }
-
-        internal static string GetExecutablePath(string rootPath)
-        {
-            return Path.Combine(rootPath, "legendary.exe");
         }
 
         public static async Task<LegendaryGameInfo.Rootobject> GetGameInfo(LegendaryGameInfo.Game installData)

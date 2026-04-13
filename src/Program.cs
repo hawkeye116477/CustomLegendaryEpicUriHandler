@@ -110,7 +110,7 @@ namespace CustomLegendaryEpicUriHandler
                             var action = queryParameters["action"];
 
                             Console.WriteLine($"Action: {action ?? "N/A"}");
-                            var legendaryLauncherPath = Path.Combine(LegendarySettings.LauncherPath, "legendary.exe");
+                            var legendaryLauncherPath = LegendarySettings.LauncherPath;
 
                             if (!File.Exists(legendaryLauncherPath))
                             {
