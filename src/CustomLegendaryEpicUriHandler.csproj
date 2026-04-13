@@ -9,29 +9,30 @@
     <AssemblyTitle>CustomLegendaryEpicUriHandler</AssemblyTitle>
     <Company>hawkeye116477</Company>
     <Product>CustomLegendaryEpicUriHandler</Product>
-    <Copyright>Copyright © hawkeye116477 2025</Copyright>
+    <Copyright>Copyright © hawkeye116477 2026</Copyright>
     <Deterministic>false</Deterministic>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Prefer32bit>false</Prefer32bit>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <NeutralLanguage></NeutralLanguage>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup>
     <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)/..'))=Dev:/CustomLegendaryEpicUriHandler</PathMap>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="System.Web" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="..\LICENSE">
       <Link>LICENSE</Link>
@@ -43,7 +44,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CliWrap" Version="3.9.0" />
+    <PackageReference Include="CliWrap" Version="3.10.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 </Project>
