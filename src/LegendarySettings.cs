@@ -98,7 +98,7 @@ namespace CustomLegendaryEpicUriHandler
                     {
                         var serializer = new JsonSerializer();
                         legendaryPluginSettings =
-                            (LegendaryPluginSettings)serializer.Deserialize(file, typeof(LegendaryPluginSettings));
+                            (LegendaryPluginSettings)serializer.Deserialize(file, typeof(LegendaryPluginSettings))!;
                     }
                 }
 
@@ -129,16 +129,16 @@ namespace CustomLegendaryEpicUriHandler
             {
                 var launcherPath = "";
                 var envPath = Environment.GetEnvironmentVariable("PATH")
-                                         .Split(new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries)
+                                         ?.Split([Path.PathSeparator], StringSplitOptions.RemoveEmptyEntries)
                                          .Select(dir => Path.Combine(dir, "legendary.exe"))
                                          .FirstOrDefault(File.Exists);
-                if (string.IsNullOrWhiteSpace(envPath) == false)
+                if (!string.IsNullOrWhiteSpace(envPath))
                 {
                     launcherPath = envPath;
                 }
                 else if (File.Exists(Path.Combine(HeroicLegendaryPath, "legendary.exe")))
                 {
-                    launcherPath = HeroicLegendaryPath;
+                    launcherPath = Path.Combine(HeroicLegendaryPath, "legendary.exe");
                 }
                 else
                 {
@@ -148,24 +148,28 @@ namespace CustomLegendaryEpicUriHandler
                         pf64 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                     }
                     
-                    launcherPath = Path.Combine(pf64, "Legendary");
-                    if (!File.Exists(Path.Combine(launcherPath, "legendary.exe")))
+                    launcherPath = Path.Combine(pf64, "Legendary", "legendary.exe");
+                    if (!File.Exists(launcherPath))
                     {
-                        launcherPath = Directory
+                        var baseLauncherPath = Directory
                                        .GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
                                                   string.Empty)
                                        ?.FullName;
+                        if (baseLauncherPath != null)
+                        {
+                            launcherPath = Path.Combine(baseLauncherPath, "legendary.exe");
+                        }
                     }
                 }
 
                 var savedSettings = PlaynitePluginSettings;
-                if (savedSettings != null && savedSettings.SelectedFullLauncherPath != "" &&
+                if (savedSettings.SelectedFullLauncherPath != "" &&
                     File.Exists(savedSettings.SelectedFullLauncherPath))
                 {
                     launcherPath = savedSettings.SelectedFullLauncherPath;
                 }
 
-                if (launcherPath != null && !File.Exists(launcherPath))
+                if (string.IsNullOrEmpty(launcherPath) || !File.Exists(launcherPath))
                 {
                     launcherPath = "";
                 }
@@ -212,15 +216,15 @@ namespace CustomLegendaryEpicUriHandler
             {
                 BufferedCommandResult result;
                 result = await Cli.Wrap(ClientExecPath)
-                                  .WithArguments(new[] { "info", gameID, "--json" })
-                                  .WithEnvironmentVariables(DefaultEnvironmentVariables)
+                                  .WithArguments(["info", gameID, "--json"])
+                                  .WithEnvironmentVariables(DefaultEnvironmentVariables!)
                                   .AddCommandToLog()
                                   .WithValidation(CommandResultValidation.None)
                                   .ExecuteBufferedAsync();
                 if (result.ExitCode != 0)
                 {
                     Console.Error.WriteLine("[Legendary]" + result.StandardError);
-                    manifest.errorDisplayed = true;
+                    manifest?.errorDisplayed = true;
                 }
                 else
                 {
