@@ -750,3 +750,4 @@ begin
       '', False, False);
   end;
 end;
+[Files]
