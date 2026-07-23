@@ -4,7 +4,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Custom Legendary Epic Uri Handler"
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.0.3"
 #define MyAppPublisher "hawkeye116477"
 #define MyAppURL "https://github.com/hawkeye116477/CustomLegendaryEpicUriHandler"
 #define MyAppExeName "CustomLegendaryEpicUriHandler.exe"

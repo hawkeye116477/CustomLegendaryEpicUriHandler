@@ -11,7 +11,7 @@
     <Product>CustomLegendaryEpicUriHandler</Product>
     <Copyright>Copyright © hawkeye116477 2026</Copyright>
     <Deterministic>false</Deterministic>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Prefer32bit>false</Prefer32bit>
     <Nullable>enable</Nullable>
