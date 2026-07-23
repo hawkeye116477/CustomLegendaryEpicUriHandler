@@ -8,6 +8,7 @@
 #define MyAppPublisher "hawkeye116477"
 #define MyAppURL "https://github.com/hawkeye116477/CustomLegendaryEpicUriHandler"
 #define MyAppExeName "CustomLegendaryEpicUriHandler.exe"
+#expr EmitLanguagesSection
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
