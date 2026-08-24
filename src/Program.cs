@@ -82,15 +82,14 @@ namespace CustomLegendaryEpicUriHandler
             try
             {
                 var uri = new Uri(urlString);
-                var expectedScheme = "com.epicgames.launcher";
+                const string expectedScheme = "com.epicgames.launcher";
                 if (uri.Scheme != expectedScheme)
                 {
-                    Console.WriteLine($"Error: Unexpected scheme '{uri.Scheme}'. Expected '${expectedScheme}'.");
+                    await Console.Error.WriteLineAsync($"Error: Unexpected scheme '{uri.Scheme}'. Expected '${expectedScheme}'.");
                     DisplayGoodBye();
                     return;
                 }
-
-                // --- Extract app name from path ---
+                
                 var absolutePath = uri.AbsolutePath;
 
 
@@ -102,8 +101,7 @@ namespace CustomLegendaryEpicUriHandler
                         {
                             var appName = absolutePath.Trim('/');
                             Console.WriteLine($"App name: {appName}");
-
-                            // --- Parse query parameters ---
+                            
                             var queryParameters =
                                 HttpUtility.ParseQueryString(uri.Query);
 
@@ -121,13 +119,14 @@ namespace CustomLegendaryEpicUriHandler
                             }
 
                             var launcherArguments = new List<string>();
-
+                            
                             // Customize the arguments based on the parsed URL components
                             if (!string.IsNullOrEmpty(appName))
                             {
                                 if (action != null && action.Equals("launch", StringComparison.OrdinalIgnoreCase))
                                 {
                                     launcherArguments.AddRange(["launch", $"{appName}"]);
+                                    launcherArguments.Add("--skip-version-check");
                                     var game = new LegendaryGameInfo.Game
                                     {
                                         App_name = appName
@@ -150,7 +149,7 @@ namespace CustomLegendaryEpicUriHandler
                                             }
                                             else
                                             {
-                                                Console.Error.WriteLine($"Unknown external app: {externalActivation}.");
+                                                await Console.Error.WriteLineAsync($"Unknown external app: {externalActivation}.");
                                             }
                                         }
                                     }
@@ -185,7 +184,7 @@ namespace CustomLegendaryEpicUriHandler
                                             {
                                                 var errorMessage = stdOutBuffer.ToString();
                                                 Console.WriteLine("[Legendary] " + errorMessage);
-                                                Console.Error.WriteLine("[Legendary] exit code: " + exited.ExitCode);
+                                                await Console.Error.WriteLineAsync("[Legendary] exit code: " + exited.ExitCode);
                                                 DisplayGoodBye();
                                             }
 
@@ -195,7 +194,7 @@ namespace CustomLegendaryEpicUriHandler
                             }
                             catch (Exception ex)
                             {
-                                Console.Error.WriteLine($"Error launching Legendary: {ex.Message}");
+                                await Console.Error.WriteLineAsync($"Error launching Legendary: {ex.Message}");
                                 DisplayGoodBye();
                             }
 
