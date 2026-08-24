@@ -61,7 +61,7 @@ Root: HKA; Subkey: "Software\Classes\com.epicgames.launcher\shell\open\command";
 [Code]
 function InitializeSetup: Boolean;
 begin
-  Dependency_AddDotNet80;
+  Dependency_AddDotNet100;
   Result := True;
 end;
 
