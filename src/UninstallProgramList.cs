@@ -14,13 +14,13 @@ public class UninstallProgramList
         public string? InstallLocation { get; set; }
         public string? Publisher { get; set; }
         public string? UninstallString { get; set; }
-        public string? URLInfoAbout { get; set; }
-        public string RegistryKeyName { get; set; }
+        public string? UrlInfoAbout { get; set; }
+        public string? RegistryKeyName { get; set; }
         public string? Path { get; set; }
 
         public override string ToString()
         {
-            return DisplayName ?? RegistryKeyName;
+            return DisplayName ?? RegistryKeyName ?? "";
         }
     }
 
@@ -48,7 +48,7 @@ public class UninstallProgramList
                             continue;
                         }
 
-                        var program = new UninstallProgram()
+                        var program = new UninstallProgram
                         {
                             DisplayIcon = prog.GetValue("DisplayIcon")?.ToString(),
                             DisplayVersion = prog.GetValue("DisplayVersion")?.ToString(),
@@ -56,7 +56,7 @@ public class UninstallProgramList
                             InstallLocation = prog.GetValue("InstallLocation")?.ToString(),
                             Publisher = prog.GetValue("Publisher")?.ToString(),
                             UninstallString = prog.GetValue("UninstallString")?.ToString(),
-                            URLInfoAbout = prog.GetValue("URLInfoAbout")?.ToString(),
+                            UrlInfoAbout = prog.GetValue("URLInfoAbout")?.ToString(),
                             Path = prog.GetValue("Path")?.ToString(),
                             RegistryKeyName = key
                         };
@@ -76,7 +76,7 @@ public class UninstallProgramList
         SearchRoot(RegistryHive.CurrentUser, progs);
         return progs;
     }
-    
+
     public static List<UninstallProgram> GetUnistallProgramsList()
     {
         var progs = new List<UninstallProgram>();

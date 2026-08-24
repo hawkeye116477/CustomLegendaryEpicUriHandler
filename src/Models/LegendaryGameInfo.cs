@@ -4,13 +4,13 @@ namespace CustomLegendaryEpicUriHandler.Models
     {
         public class Rootobject
         {
-            public Game Game { get; set; }
-            public bool errorDisplayed { get; set; } = false;
+            public Game? Game { get; set; }
+            public bool ErrorDisplayed { get; set; } = false;
         }
 
         public class Game
         {
-            public string App_name { get; set; }
+            public string? App_name { get; set; }
             public string Title { get; set; } = "";
             public string Version { get; set; } = "";
             public bool Is_dlc { get; set; } = false;

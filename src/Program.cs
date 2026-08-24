@@ -15,10 +15,10 @@ namespace CustomLegendaryEpicUriHandler
 {
     internal class Program
     {
-        public static string ExeName =>
+        private static string ExeName =>
             Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName) ?? string.Empty;
 
-        public static void DisplayHelp()
+        private static void DisplayHelp()
         {
             Console.WriteLine($"\nUsage: {ExeName} [options]");
             Console.WriteLine("\nOptions:");
@@ -27,7 +27,7 @@ namespace CustomLegendaryEpicUriHandler
             Console.WriteLine("-h, --help\tDisplay this help message");
         }
 
-        public static void DisplayGoodBye()
+        private static void DisplayGoodBye()
         {
             Console.WriteLine("Press any key to continue/exit.");
             Console.ReadKey();
@@ -43,7 +43,7 @@ namespace CustomLegendaryEpicUriHandler
                     case "--version":
                     case "-v":
                         Console.WriteLine(
-                                          $"CustomLegendaryEpicUriHandler {Assembly.GetExecutingAssembly().GetName().Version}");
+                            $"CustomLegendaryEpicUriHandler {Assembly.GetExecutingAssembly().GetName().Version}");
                         return;
                     case "--help" or "-h":
                         DisplayHelp();
@@ -115,7 +115,7 @@ namespace CustomLegendaryEpicUriHandler
                             if (!File.Exists(legendaryLauncherPath))
                             {
                                 Console.WriteLine(
-                                                  $"Error: Legendary launcher not found at '{legendaryLauncherPath}'. Please install or add it to PATH environment variable.");
+                                    $"Error: Legendary launcher not found at '{legendaryLauncherPath}'. Please install or add it to PATH environment variable.");
                                 DisplayGoodBye();
                                 return;
                             }
@@ -127,17 +127,17 @@ namespace CustomLegendaryEpicUriHandler
                             {
                                 if (action != null && action.Equals("launch", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    launcherArguments.AddRange(new[] { "launch", $"{appName}" });
+                                    launcherArguments.AddRange(["launch", $"{appName}"]);
                                     var game = new LegendaryGameInfo.Game
-                                               {
-                                                   App_name = appName
-                                               };
+                                    {
+                                        App_name = appName
+                                    };
                                     var manifest = await LegendarySettings.GetGameInfo(game);
                                     if (manifest?.Game != null)
                                     {
                                         if (!string.IsNullOrEmpty(manifest.Game.External_activation) &&
-                                            (manifest.Game.External_activation.ToLower() == "origin" ||
-                                             manifest.Game.External_activation.ToLower() == "the ea app"))
+                                            (manifest.Game.External_activation.Equals("origin", StringComparison.OrdinalIgnoreCase) ||
+                                             manifest.Game.External_activation.Equals("the ea app", StringComparison.OrdinalIgnoreCase)))
                                         {
                                             launcherArguments.Add("--origin");
                                         }
@@ -202,12 +202,12 @@ namespace CustomLegendaryEpicUriHandler
             }
             catch (UriFormatException ex)
             {
-                Console.Error.WriteLine($"Error: Invalid URI format: {ex.Message}");
+                await Console.Error.WriteLineAsync($"Error: Invalid URI format: {ex.Message}");
                 DisplayGoodBye();
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"An unexpected error occurred: {ex.Message}");
+                await Console.Error.WriteLineAsync($"An unexpected error occurred: {ex.Message}");
                 DisplayGoodBye();
             }
         }

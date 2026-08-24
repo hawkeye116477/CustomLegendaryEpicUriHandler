@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Buffered;
 using CustomLegendaryEpicUriHandler.Models;
-using Newtonsoft.Json;
 
 namespace CustomLegendaryEpicUriHandler
 {
     public class LegendarySettings
     {
-        public static string PluginPath { get; set; } =
+        private static string PluginPath { get; set; } =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                         "Playnite", "ExtensionsData",
-                         "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
+                "Playnite", "ExtensionsData",
+                "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
 
-        public static string ClientExecPath
+        private static string ClientExecPath
         {
             get
             {
@@ -26,15 +25,15 @@ namespace CustomLegendaryEpicUriHandler
             }
         }
 
-        public static string ConfigPath
+        private static string ConfigPath
         {
             get
             {
                 var legendaryConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                                                       ".config", "legendary");
+                    ".config", "legendary");
                 var heroicLegendaryConfigPath =
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "heroic",
-                                 "legendaryConfig", "legendary");
+                        "legendaryConfig", "legendary");
                 var originalLegendaryInstallListPath = Path.Combine(legendaryConfigPath, "installed.json");
                 var heroicLegendaryInstallListPath = Path.Combine(heroicLegendaryConfigPath, "installed.json");
                 if (File.Exists(heroicLegendaryInstallListPath))
@@ -70,7 +69,7 @@ namespace CustomLegendaryEpicUriHandler
                 var envDict = new Dictionary<string, string>();
                 var heroicLegendaryConfigPath =
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "heroic",
-                                 "legendaryConfig", "legendary");
+                        "legendaryConfig", "legendary");
                 if (ConfigPath == heroicLegendaryConfigPath)
                 {
                     envDict.Add("LEGENDARY_CONFIG_PATH", ConfigPath);
@@ -80,24 +79,31 @@ namespace CustomLegendaryEpicUriHandler
             }
         }
 
-        public static LegendaryPluginSettings PlaynitePluginSettings
+        private static LegendaryPluginSettings PlaynitePluginSettings
         {
             get
             {
                 var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                              "CustomLegendaryEpicUriHandler");
+                    "CustomLegendaryEpicUriHandler");
                 if (!File.Exists(settingsPath))
                 {
-                    settingsPath  = Path.Combine(PluginPath, "config.json");
+                    settingsPath = Path.Combine(PluginPath, "config.json");
                 }
+
                 var legendaryPluginSettings = new LegendaryPluginSettings();
                 if (File.Exists(settingsPath))
                 {
-                    using (var file = File.OpenText(settingsPath))
+                    var content = File.ReadAllText(settingsPath);
+                    if (!string.IsNullOrEmpty(content))
                     {
-                        var serializer = new JsonSerializer();
-                        legendaryPluginSettings =
-                            (LegendaryPluginSettings)serializer.Deserialize(file, typeof(LegendaryPluginSettings))!;
+                        if (Serialization.TryFromJson<LegendaryPluginSettings>(content, out var newLegendaryPluginSettings))
+                        {
+                            if (newLegendaryPluginSettings != null)
+                            {
+                                legendaryPluginSettings =
+                                    newLegendaryPluginSettings;
+                            }
+                        }
                     }
                 }
 
@@ -109,13 +115,16 @@ namespace CustomLegendaryEpicUriHandler
         {
             get
             {
-                var heroicPath = Path.GetDirectoryName(UninstallProgramList.GetUnistallProgramsList().FirstOrDefault(p => p.DisplayName?.StartsWith("Heroic") == true
-                    && p.Publisher == "Heroic Games Launcher")?.DisplayIcon?.Split(',')[0]);
+                var heroicPath = Path.GetDirectoryName(UninstallProgramList.GetUnistallProgramsList()
+                                                                           .FirstOrDefault(p => p.DisplayName?.StartsWith("Heroic") == true
+                                                                                && p.Publisher == "Heroic Games Launcher")
+                                                                          ?.DisplayIcon?.Split(',')[0]);
                 if (string.IsNullOrEmpty(heroicPath))
                 {
                     heroicPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         @"Programs\heroic");
                 }
+
                 var heroicResourcesBasePath = Path.Combine(@$"{heroicPath}\resources\app.asar.unpacked\build\bin");
                 var path = Path.Combine(heroicResourcesBasePath, @"win32\");
                 if (!Directory.Exists(path))
@@ -133,10 +142,11 @@ namespace CustomLegendaryEpicUriHandler
             {
                 string[] validLegendaryBinaries = ["legendary_windows_x86_64.exe", "legendary_windows_x64.exe", "legendary.exe"];
                 var launcherPath = "";
-                string? envPath = Environment.GetEnvironmentVariable("PATH")?
+                string? envPath = Environment.GetEnvironmentVariable("PATH")? 
                                              .Split([Path.PathSeparator], StringSplitOptions.RemoveEmptyEntries)
                                              .Where(p => p.IndexOfAny(Path.GetInvalidPathChars()) < 0)
-                                             .SelectMany(pathEntry => validLegendaryBinaries.Select(legendaryBinary => Path.Combine(pathEntry.Trim(), legendaryBinary)))
+                                             .SelectMany(pathEntry => validLegendaryBinaries.Select(legendaryBinary =>
+                                                  Path.Combine(pathEntry.Trim(), legendaryBinary)))
                                              .FirstOrDefault(File.Exists);
                 if (!string.IsNullOrWhiteSpace(envPath))
                 {
@@ -144,7 +154,10 @@ namespace CustomLegendaryEpicUriHandler
                 }
                 else
                 {
-                    var launcherMatches = validLegendaryBinaries.Select(legendaryBinary => Path.Combine(HeroicLegendaryPath, legendaryBinary)).Where(File.Exists).ToList();
+                    var launcherMatches = validLegendaryBinaries
+                                         .Select(legendaryBinary => Path.Combine(HeroicLegendaryPath, legendaryBinary))
+                                         .Where(File.Exists)
+                                         .ToList();
                     if (launcherMatches.Count == 0)
                     {
                         var pf64 = Environment.GetEnvironmentVariable("ProgramW6432");
@@ -152,9 +165,13 @@ namespace CustomLegendaryEpicUriHandler
                         {
                             pf64 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                         }
+
                         var launcherBasePath = Path.Combine(pf64, "Legendary");
-                        launcherMatches = validLegendaryBinaries.Select(legendaryBinary => Path.Combine(launcherBasePath, legendaryBinary)).Where(File.Exists).ToList();
+                        launcherMatches = validLegendaryBinaries.Select(legendaryBinary => Path.Combine(launcherBasePath, legendaryBinary))
+                                                                .Where(File.Exists)
+                                                                .ToList();
                     }
+
                     if (launcherMatches.Count > 0)
                     {
                         launcherPath = launcherMatches.First();
@@ -177,7 +194,7 @@ namespace CustomLegendaryEpicUriHandler
             }
         }
 
-        public static async Task<LegendaryGameInfo.Rootobject> GetGameInfo(LegendaryGameInfo.Game installData)
+        public static async Task<LegendaryGameInfo.Rootobject?> GetGameInfo(LegendaryGameInfo.Game installData)
         {
             var gameID = installData.App_name;
             var manifest = new LegendaryGameInfo.Rootobject();
@@ -191,44 +208,47 @@ namespace CustomLegendaryEpicUriHandler
             var correctJson = false;
             if (File.Exists(cacheInfoFile))
             {
-                var content = File.ReadAllText(cacheInfoFile);
-
+                var content = await File.ReadAllTextAsync(cacheInfoFile);
                 if (!string.IsNullOrWhiteSpace(content))
                 {
-                    try
+                    if (Serialization.TryFromJson<LegendaryGameInfo.Rootobject>(content, out var newManifest))
                     {
-                        var serializer = new JsonSerializer();
-                        manifest = JsonConvert.DeserializeObject<LegendaryGameInfo.Rootobject>(content);
-                        if (manifest != null && manifest.Game != null)
+                        if (newManifest is { Game: not null })
                         {
+                            manifest = newManifest;
                             correctJson = true;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.Error.WriteLine(ex.Message);
                     }
                 }
             }
 
-            if (!correctJson)
+            if (gameID == null)
             {
-                BufferedCommandResult result;
-                result = await Cli.Wrap(ClientExecPath)
+                return null;
+            }
+
+            if (correctJson)
+            {
+                return manifest;
+            }
+
+            var result = await Cli.Wrap(ClientExecPath)
                                   .WithArguments(["info", gameID, "--json"])
                                   .WithEnvironmentVariables(DefaultEnvironmentVariables!)
                                   .AddCommandToLog()
                                   .WithValidation(CommandResultValidation.None)
                                   .ExecuteBufferedAsync();
-                if (result.ExitCode != 0)
+            if (result.ExitCode != 0)
+            {
+                await Console.Error.WriteLineAsync("[Legendary]" + result.StandardError);
+                manifest.ErrorDisplayed = true;
+            }
+            else
+            {
+                await File.WriteAllTextAsync(cacheInfoFile, result.StandardOutput);
+                if (Serialization.TryFromJson<LegendaryGameInfo.Rootobject>(result.StandardOutput, out var newManifest))
                 {
-                    Console.Error.WriteLine("[Legendary]" + result.StandardError);
-                    manifest?.errorDisplayed = true;
-                }
-                else
-                {
-                    File.WriteAllText(cacheInfoFile, result.StandardOutput);
-                    manifest = JsonConvert.DeserializeObject<LegendaryGameInfo.Rootobject>(result.StandardOutput);
+                    manifest = newManifest;
                 }
             }
 
