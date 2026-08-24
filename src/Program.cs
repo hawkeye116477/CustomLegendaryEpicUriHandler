@@ -135,11 +135,23 @@ namespace CustomLegendaryEpicUriHandler
                                     var manifest = await LegendarySettings.GetGameInfo(game);
                                     if (manifest?.Game != null)
                                     {
-                                        if (!string.IsNullOrEmpty(manifest.Game.External_activation) &&
-                                            (manifest.Game.External_activation.Equals("origin", StringComparison.OrdinalIgnoreCase) ||
-                                             manifest.Game.External_activation.Equals("the ea app", StringComparison.OrdinalIgnoreCase)))
+                                        var externalActivation = manifest.Game.External_activation;
+
+                                        if (!string.IsNullOrEmpty(externalActivation))
                                         {
-                                            launcherArguments.Add("--origin");
+                                            if (externalActivation.Equals("origin", StringComparison.OrdinalIgnoreCase) ||
+                                                externalActivation.Equals("the ea app", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                launcherArguments.Add("--origin");
+                                            }
+                                            else if (externalActivation.Equals("Ubisoft", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                launcherArguments.Add("--ubisoft");
+                                            }
+                                            else
+                                            {
+                                                Console.Error.WriteLine($"Unknown external app: {externalActivation}.");
+                                            }
                                         }
                                     }
                                 }
