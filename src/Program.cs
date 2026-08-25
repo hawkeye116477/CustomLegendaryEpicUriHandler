@@ -183,7 +183,7 @@ namespace CustomLegendaryEpicUriHandler
                                             if (exited.ExitCode != 0)
                                             {
                                                 var errorMessage = stdOutBuffer.ToString();
-                                                Console.WriteLine("[Legendary] " + errorMessage);
+                                                await Console.Error.WriteLineAsync("[Legendary] " + errorMessage);
                                                 await Console.Error.WriteLineAsync("[Legendary] exit code: " + exited.ExitCode);
                                                 DisplayGoodBye();
                                             }
