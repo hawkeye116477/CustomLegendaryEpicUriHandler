@@ -84,7 +84,7 @@ namespace CustomLegendaryEpicUriHandler
             get
             {
                 var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "CustomLegendaryEpicUriHandler");
+                    "CustomLegendaryEpicUriHandler", "config.json");
                 if (!File.Exists(settingsPath))
                 {
                     settingsPath = Path.Combine(PluginPath, "config.json");
