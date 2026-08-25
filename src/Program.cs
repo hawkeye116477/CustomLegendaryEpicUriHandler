@@ -208,6 +208,11 @@ namespace CustomLegendaryEpicUriHandler
                             Process.Start(new ProcessStartInfo(epicUrl) { UseShellExecute = true });
                             break;
                         }
+                        default:
+                        {
+                            await Console.Error.WriteLineAsync($"Feature {uri.Host} isn't supported. Please report that.");
+                            break;
+                        }
                     }
                 }
             }
