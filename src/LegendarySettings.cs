@@ -97,7 +97,8 @@ namespace CustomLegendaryEpicUriHandler
                 }
 
                 var content = File.ReadAllText(settingsPath);
-                if (string.IsNullOrEmpty(content) || !Serialization.TryFromJson<LegendaryPluginSettings>(content, out var newLegendaryPluginSettings))
+                if (string.IsNullOrEmpty(content) ||
+                    !Serialization.TryFromJson<LegendaryPluginSettings>(content, out var newLegendaryPluginSettings))
                 {
                     return legendaryPluginSettings;
                 }
@@ -142,7 +143,7 @@ namespace CustomLegendaryEpicUriHandler
             {
                 string[] validLegendaryBinaries = ["legendary_windows_x86_64.exe", "legendary_windows_x64.exe", "legendary.exe"];
                 var launcherPath = "";
-                string? envPath = Environment.GetEnvironmentVariable("PATH")?
+                string? envPath = Environment.GetEnvironmentVariable("PATH")? 
                                              .Split([Path.PathSeparator], StringSplitOptions.RemoveEmptyEntries)
                                              .Where(p => p.IndexOfAny(Path.GetInvalidPathChars()) < 0)
                                              .SelectMany(pathEntry => validLegendaryBinaries.Select(legendaryBinary =>

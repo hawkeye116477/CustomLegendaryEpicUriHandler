@@ -89,7 +89,7 @@ namespace CustomLegendaryEpicUriHandler
                     DisplayGoodBye();
                     return;
                 }
-                
+
                 var absolutePath = uri.AbsolutePath;
 
 
@@ -101,7 +101,7 @@ namespace CustomLegendaryEpicUriHandler
                         {
                             var appName = absolutePath.Trim('/');
                             Console.WriteLine($"App name: {appName}");
-                            
+
                             var queryParameters =
                                 HttpUtility.ParseQueryString(uri.Query);
 
@@ -119,7 +119,7 @@ namespace CustomLegendaryEpicUriHandler
                             }
 
                             var launcherArguments = new List<string>();
-                            
+
                             // Customize the arguments based on the parsed URL components
                             if (!string.IsNullOrEmpty(appName))
                             {
