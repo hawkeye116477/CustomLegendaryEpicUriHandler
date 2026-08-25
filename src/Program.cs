@@ -211,6 +211,7 @@ namespace CustomLegendaryEpicUriHandler
                         default:
                         {
                             await Console.Error.WriteLineAsync($"Feature {uri.Host} isn't supported. Please report that.");
+                            DisplayGoodBye();
                             break;
                         }
                     }
