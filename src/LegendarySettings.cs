@@ -16,11 +16,11 @@ namespace CustomLegendaryEpicUriHandler
             get
             {
                 var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "CustomLegendaryEpicUriHandler");
+                    "Playnite", "ExtensionsData", "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
                 if (!Directory.Exists(configPath))
                 {
                     configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        "Playnite", "ExtensionsData", "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
+                        "CustomLegendaryEpicUriHandler");
                 }
                 return configPath;
             }
