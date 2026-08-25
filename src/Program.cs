@@ -205,7 +205,7 @@ namespace CustomLegendaryEpicUriHandler
                             var urlPart = absolutePath.Trim('/');
                             var epicUrl = $"https://store.epicgames.com/{urlPart}";
                             Console.WriteLine($"Final URL: {epicUrl}");
-                            Process.Start(epicUrl);
+                            Process.Start(new ProcessStartInfo(epicUrl) { UseShellExecute = true });
                             break;
                         }
                     }
