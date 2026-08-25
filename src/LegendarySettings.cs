@@ -15,13 +15,41 @@ namespace CustomLegendaryEpicUriHandler
         {
             get
             {
-                var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "Playnite", "ExtensionsData", "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
+                var handlerDefaultConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "CustomLegendaryEpicUriHandler");
+                var configPath = handlerDefaultConfigPath;
                 if (!Directory.Exists(configPath))
                 {
                     configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        "CustomLegendaryEpicUriHandler");
+                        "Playnite", "ExtensionsData", "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
                 }
+
+                if (Directory.Exists(configPath))
+                {
+                    return configPath;
+                }
+
+                var envHandlerConfigPath = Environment.GetEnvironmentVariable("CustomLegendaryEpicUriHandler_CONFIG_PATH");
+                var envDirCreated = false;
+                if (!string.IsNullOrWhiteSpace(envHandlerConfigPath))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(envHandlerConfigPath);
+                        envDirCreated = true;
+                        configPath = envHandlerConfigPath;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine(ex);
+                    }
+                }
+
+                if (!envDirCreated)
+                {
+                    configPath = handlerDefaultConfigPath;
+                }
+
                 return configPath;
             }
         }
@@ -147,8 +175,9 @@ namespace CustomLegendaryEpicUriHandler
             {
                 string[] validLegendaryBinaries = ["legendary_windows_x86_64.exe", "legendary_windows_x64.exe", "legendary.exe"];
                 var launcherPath = "";
-                string? envPath = Environment.GetEnvironmentVariable("PATH")? 
-                                             .Split([Path.PathSeparator], StringSplitOptions.RemoveEmptyEntries)
+                string? envPath = Environment.GetEnvironmentVariable("PATH")
+                                           ?
+                                          .Split([Path.PathSeparator], StringSplitOptions.RemoveEmptyEntries)
                                              .Where(p => p.IndexOfAny(Path.GetInvalidPathChars()) < 0)
                                              .SelectMany(pathEntry => validLegendaryBinaries.Select(legendaryBinary =>
                                                   Path.Combine(pathEntry.Trim(), legendaryBinary)))
