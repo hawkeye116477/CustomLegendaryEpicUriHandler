@@ -11,10 +11,20 @@ namespace CustomLegendaryEpicUriHandler
 {
     public class LegendarySettings
     {
-        private static string PluginPath { get; set; } =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Playnite", "ExtensionsData",
-                "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
+        private static string HandlerConfigPath
+        {
+            get
+            {
+                var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "CustomLegendaryEpicUriHandler");
+                if (!Directory.Exists(configPath))
+                {
+                    configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "Playnite", "ExtensionsData", "ead65c3b-2f8f-4e37-b4e6-b3de6be540c6");
+                }
+                return configPath;
+            }
+        }
 
         private static string ClientExecPath
         {
@@ -83,13 +93,7 @@ namespace CustomLegendaryEpicUriHandler
         {
             get
             {
-                var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "CustomLegendaryEpicUriHandler", "config.json");
-                if (!File.Exists(settingsPath))
-                {
-                    settingsPath = Path.Combine(PluginPath, "config.json");
-                }
-
+                var settingsPath = Path.Combine(HandlerConfigPath, "config.json");
                 var legendaryPluginSettings = new LegendaryPluginSettings();
                 if (!File.Exists(settingsPath))
                 {
@@ -199,7 +203,7 @@ namespace CustomLegendaryEpicUriHandler
         {
             var gameID = installData.App_name;
             var manifest = new LegendaryGameInfo.Rootobject();
-            var cacheInfoPath = Path.Combine(PluginPath, "infocache");
+            var cacheInfoPath = Path.Combine(HandlerConfigPath, "infocache");
             var cacheInfoFile = Path.Combine(cacheInfoPath, gameID + ".json");
             if (!Directory.Exists(cacheInfoPath))
             {
